@@ -1,7 +1,15 @@
 import base64
+import sys
 import json
 import urllib
 import urllib2
+
+
+class CallFireError(Exception):
+    """Exception wrapper."""
+    def __init__(self, wrapped_exc, *args, **kwargs):
+        self.wrapped_exc = wrapped_exc
+        super(CallFireError, self).__init__(*args, **kwargs)
 
 
 class BaseResponse(object):
@@ -94,4 +102,9 @@ class BaseAPI(object):
         request = urllib2.Request(url, data, headers)
         request.get_method = lambda: method
 
-        return BaseResponse(urllib2.urlopen(request))
+        try:
+            return BaseResponse(urllib2.urlopen(request))
+        except Exception as wrapped_exc:
+            exception_type, value, traceback = sys.exc_info()
+            exception_wrapper = CallFireError(wrapped_exc, str(wrapped_exc))
+            raise CallFireError, exception_wrapper, traceback
