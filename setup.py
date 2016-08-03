@@ -8,7 +8,7 @@ with open('README.rst') as f:
 
 setup(
     name='python-callfire',
-    version='0.1.0',
+    version='0.9.0',
     description='CallFire API thin wrapper.',
     long_description=readme,
     author='Alexander Shchapov',
