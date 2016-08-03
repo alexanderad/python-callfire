@@ -13,6 +13,6 @@ setup(
     long_description=readme,
     author='Alexander Shchapov',
     author_email='sasha@imedicare.com',
-    packages=find_packages(exclude=('tests'))
+    packages=find_packages(exclude=('tests', 'swagger'))
 )
 
