@@ -7,7 +7,7 @@ class CallFireAPIVersion2(BaseAPI):
     Auto-generated based on https://www.callfire.com/v2/api-docs/swagger.json
     """
     #: Base API url
-    BASE_URL = '1https://api.callfire.com/v2'
+    BASE_URL = 'https://api.callfire.com/v2'
 
     def find_calls(self, query=None):
         """Find calls.

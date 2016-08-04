@@ -130,8 +130,10 @@ class BaseAPI(object):
         try:
             return BaseResponse(urllib2.urlopen(request))
         except Exception as wrapped_exc:
-            wrapped_exp_body = (
-                wrapped_exc.fp.read() if wrapped_exc.fp else None)
+            wrapped_exp_body = None
+            if hasattr(wrapped_exc, 'fp') and wrapped_exc.fp:
+                wrapped_exp_body = wrapped_exc.fp.read()
+
             wrapped_exc_repr = '{}: {}'.format(wrapped_exc, wrapped_exp_body)
 
             self.logger.debug(
