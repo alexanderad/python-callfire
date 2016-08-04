@@ -57,10 +57,5 @@ Usage
 
 Whenever low level exception occurs it is wrapped and re-raised as `CallFireError`,
 while original traceback preserved and displayed and original exception is also
-available for inspection::
-
-    try:
-        api.find_caller_ids()
-    except CallFireError as e:
-        print e.wrapped_exc
+available for inspection.
 

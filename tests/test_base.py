@@ -24,7 +24,7 @@ class BaseTest(unittest.TestCase):
         self.assertEqual(self.base.password, 'password')
 
     def test_request(self):
-        path, query, body = 'path', dict(fields='id'), dict(data='data')
+        path, query, body = '/path', dict(fields='id'), dict(data='data')
 
         expected_url = 'base_url/path?fields=id'
         expected_data = json.dumps(body)
@@ -54,7 +54,7 @@ class BaseTest(unittest.TestCase):
         self.assertEqual(response._response, fake_response)
 
     def test_post(self):
-        path, query, body = 'path', dict(fields='id'), dict(data='data')
+        path, query, body = '/path', dict(fields='id'), dict(data='data')
 
         (flexmock(self.base)
          .should_receive('_request')
@@ -63,7 +63,7 @@ class BaseTest(unittest.TestCase):
         self.base._post(path, query, body)
 
     def test_get(self):
-        path, query, body = 'path', dict(fields='id'), dict(data='data')
+        path, query, body = '/path', dict(fields='id'), dict(data='data')
 
         (flexmock(self.base)
          .should_receive('_request')
@@ -72,7 +72,7 @@ class BaseTest(unittest.TestCase):
         self.base._get(path, query, body)
 
     def test_delete(self):
-        path, query, body = 'path', dict(fields='id'), dict(data='data')
+        path, query, body = '/path', dict(fields='id'), dict(data='data')
 
         (flexmock(self.base)
          .should_receive('_request')
@@ -81,7 +81,7 @@ class BaseTest(unittest.TestCase):
         self.base._delete(path, query, body)
 
     def test_put(self):
-        path, query, body = 'path', dict(fields='id'), dict(data='data')
+        path, query, body = '/path', dict(fields='id'), dict(data='data')
 
         (flexmock(self.base)
          .should_receive('_request')
@@ -90,7 +90,7 @@ class BaseTest(unittest.TestCase):
         self.base._put(path, query, body)
 
     def test_exception_wrapper(self):
-        path, query, body = 'path', dict(fields='id'), dict(data='data')
+        path, query, body = '/path', dict(fields='id'), dict(data='data')
 
         fake_request = flexmock()
         (flexmock(urllib2)

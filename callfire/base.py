@@ -3,6 +3,10 @@ import sys
 import json
 import urllib
 import urllib2
+import logging
+
+# set default logger handler
+logging.getLogger(__name__).addHandler(logging.NullHandler())
 
 
 class CallFireError(Exception):
@@ -30,15 +34,34 @@ class BaseResponse(object):
 class BaseAPI(object):
     #: Base API url
     BASE_URL = None
+    #: Logger
+    logger = logging.getLogger(__name__)
 
-    def __init__(self, username, password):
+    def __init__(self, username, password, debug=False):
         """API base.
 
         :param username: API username
         :param password: API password
+        :param debug: enable debug logger
         """
         self.username = username
         self.password = password
+        if debug:
+            self._add_stderr_logger()
+
+    def _add_stderr_logger(self, level=logging.DEBUG):
+        """Adds stderr logger for debug output.
+
+        :param level: set logger level
+        """
+        handler = logging.StreamHandler(sys.stderr)
+        handler.setFormatter(
+            logging.Formatter('%(asctime)s %(levelname)s %(message)s'))
+
+        logger = logging.getLogger(__name__)
+        logger.addHandler(handler)
+        logger.setLevel(level)
+        logger.debug('Enabled stderr debug logging at %s', __name__)
 
     def _post(self, path, query=None, body=None):
         """Sends a single POST request.
@@ -84,10 +107,12 @@ class BaseAPI(object):
         :param body: request body
         :param method: request method
         """
-        query = query or dict()
-        body = body or dict()
+        query = query
 
-        url = '{}/{}?{}'.format(self.BASE_URL, path, urllib.urlencode(query))
+        url = '{}{}'.format(self.BASE_URL, path)
+        if query:
+            url += '?{}'.format(urllib.urlencode(query))
+
         auth_header = base64.encodestring(
             '{}:{}'.format(self.username, self.password)).strip()
         headers = {
@@ -105,6 +130,15 @@ class BaseAPI(object):
         try:
             return BaseResponse(urllib2.urlopen(request))
         except Exception as wrapped_exc:
+            wrapped_exp_body = (
+                wrapped_exc.fp.read() if wrapped_exc.fp else None)
+            wrapped_exc_repr = '{}: {}'.format(wrapped_exc, wrapped_exp_body)
+
+            self.logger.debug(
+                "Error '%s' in context of method '%s %s' query '%s' body '%s' "
+                "response body: '%s'",
+                str(wrapped_exc), method, path, query, body, wrapped_exc_repr)
+
             exception_type, value, traceback = sys.exc_info()
-            exception_wrapper = CallFireError(wrapped_exc, str(wrapped_exc))
+            exception_wrapper = CallFireError(wrapped_exc, wrapped_exc_repr)
             raise CallFireError, exception_wrapper, traceback
