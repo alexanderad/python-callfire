@@ -14,11 +14,6 @@ class BaseTest(unittest.TestCase):
         self.base = callfire_base.BaseAPI('username', 'password')
         self.base.BASE_URL = 'base_url'
 
-    def test_base_response_json(self):
-        test_json = dict(key='value')
-        response = callfire_base.BaseResponse(StringIO(json.dumps(test_json)))
-        self.assertDictEqual(response.json(), test_json)
-
     def test_base_attrs(self):
         self.assertEqual(self.base.username, 'username')
         self.assertEqual(self.base.password, 'password')
@@ -43,15 +38,14 @@ class BaseTest(unittest.TestCase):
          .with_args(expected_url, expected_data, expected_headers)
          .and_return(fake_request))
 
-        fake_response = flexmock()
+        fake_response = flexmock(read=lambda: '{"success": true}')
         (flexmock(urllib2)
          .should_receive('urlopen')
          .with_args(fake_request)
          .and_return(fake_response))
 
         response = self.base._request(path, query, body, 'POST')
-        self.assertIsInstance(response, callfire_base.BaseResponse)
-        self.assertEqual(response._response, fake_response)
+        self.assertDictEqual(response.json(), dict(success=True))
 
     def test_post(self):
         path, query, body = '/path', dict(fields='id'), dict(data='data')

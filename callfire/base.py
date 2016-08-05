@@ -1,9 +1,10 @@
 import base64
-import sys
 import json
+import logging
+import sys
+import types
 import urllib
 import urllib2
-import logging
 
 # set default logger handler
 logging.getLogger(__name__).addHandler(logging.NullHandler())
@@ -14,21 +15,6 @@ class CallFireError(Exception):
     def __init__(self, wrapped_exc, *args, **kwargs):
         self.wrapped_exc = wrapped_exc
         super(CallFireError, self).__init__(*args, **kwargs)
-
-
-class BaseResponse(object):
-    """Response wrapper."""
-    def __init__(self, response):
-        self._response = response
-
-    def __getattr__(self, item):
-        if hasattr(self._response, item):
-            return getattr(self._response, item)
-        return getattr(self, item)
-
-    def json(self):
-        """Interprets the response as JSON."""
-        return json.load(self._response)
 
 
 class BaseAPI(object):
@@ -128,7 +114,9 @@ class BaseAPI(object):
         request.get_method = lambda: method
 
         try:
-            return BaseResponse(urllib2.urlopen(request))
+            response = urllib2.urlopen(request)
+            response.json = types.MethodType(lambda r: json.load(r), response)
+            return response
         except Exception as wrapped_exc:
             wrapped_exp_body = None
             if hasattr(wrapped_exc, 'fp') and wrapped_exc.fp:
