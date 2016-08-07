@@ -20,6 +20,7 @@ setup(
     author_email='sasha@imedicare.com',
     install_requires=['six'],
     tests_require=['nose', 'flexmock'],
+    test_suite='tests',
     packages=find_packages(exclude=('tests', 'swagger')),
     classifiers=(
         'Development Status :: 4 - Beta',
