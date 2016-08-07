@@ -94,6 +94,15 @@ class BaseAPI(object):
         """
         return self._request(path, query, body, 'PUT')
 
+    def _get_auth_header(self):
+        """Returns authorization header value.
+
+        :returns auth header
+        """
+        return 'Basic {}'.format(base64.b64encode(
+            '{}:{}'.format(self.username, self.password).encode()
+        ).strip().decode())
+
     def _request(self, path, query, body, method):
         """Sends a single API request.
 
@@ -108,24 +117,22 @@ class BaseAPI(object):
         if query:
             url += '?{}'.format(urlencode(query))
 
-        auth_header = base64.b64encode(
-            '{}:{}'.format(self.username, self.password).encode('utf-8')
-        ).strip()
         headers = {
             'Content-Type': 'application/json',
-            'Authorization': 'Basic {}'.format(auth_header),
+            'Authorization': self._get_auth_header(),
         }
 
         data = None
         if body:
-            data = json.dumps(body)
+            data = json.dumps(body).encode()
 
         request = Request(url, data, headers)
         request.get_method = lambda: method
 
         try:
             response = urlopen(request)
-            response.json = types.MethodType(lambda r: json.load(r), response)
+            response.json = types.MethodType(
+                lambda r: json.loads(r.read().decode()), response)
             return response
         except URLError as wrapped_exc:
             wrapped_exp_body = 'None'

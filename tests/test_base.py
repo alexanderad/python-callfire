@@ -29,15 +29,10 @@ class BaseTest(unittest.TestCase):
         path, query, body = '/path', dict(fields='id'), dict(data='data')
 
         expected_url = 'base_url/path?fields=id'
-        expected_data = json.dumps(body)
+        expected_data = json.dumps(body).encode()
         expected_headers = {
             'Content-Type': 'application/json',
-            'Authorization': 'Basic {}'.format(
-                base64.b64encode(
-                    '{}:{}'.format(
-                        self.base.username, self.base.password).encode('utf-8')
-                ).strip()
-            )
+            'Authorization': self.base._get_auth_header()
         }
 
         fake_request = flexmock()
@@ -46,7 +41,7 @@ class BaseTest(unittest.TestCase):
          .with_args(expected_url, expected_data, expected_headers)
          .and_return(fake_request))
 
-        fake_response = flexmock(read=lambda: '{"success": true}')
+        fake_response = flexmock(read=lambda: b'{"success": true}')
         (flexmock(callfire_base)
          .should_receive('urlopen')
          .with_args(fake_request)
@@ -129,6 +124,16 @@ class BaseTest(unittest.TestCase):
         self.assertIsInstance(e.wrapped_exc, HTTPError)
         self.assertEqual(
             str(e), 'HTTP Error 400: Bad Request: {"error": "Bad Request"}')
+
+    def test_get_auth_header(self):
+        expected_auth_header = 'Basic {}'.format(
+            base64.b64encode(
+                '{}:{}'.format(
+                    self.base.username, self.base.password
+                ).encode()
+            ).decode()
+        )
+        self.assertEqual(self.base._get_auth_header(), expected_auth_header)
 
 
 if __name__ == '__main__':
