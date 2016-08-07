@@ -1,18 +1,20 @@
 python-callfire
 ===============
+.. image:: https://travis-ci.org/iMedicare/python-callfire.svg?branch=master
+    :target: https://travis-ci.org/iMedicare/python-callfire
 
 Thin wrapper around `CallFire API <https://developers.callfire.com/docs.html>`_.
 API wrapper definitions are generated automatically based on Swagger JSON spec.
 
+
 Usage
 -----
-::
+.. code-block:: python
 
-    In [1]: from callfire import CallFireAPI
-    In [2]: api = CallFireAPI('<api-app-username>', '<api-app-password>')
+    >>> from callfire import CallFireAPI
+    >>> api = CallFireAPI('<api-app-username>', '<api-app-password>')
 
-    In [2]: api.get_account().json()
-    Out[2]:
+    >>> api.get_account().json()
     {u'email': u'your-email@your-domain.com',
      u'firstName': u'John',
      u'id': 700321776,
@@ -20,22 +22,8 @@ Usage
      u'name': u'Metacortex',
      u'permissions': [u'ACCOUNT_HOLDER']}
 
-     In [3]: api.get_call?
-     Signature: api.get_call(id, query=None)
-     Docstring:
-     Find a specific call.
-
-     Returns a single Call instance for a given call id.
-
-     :path integer id: Id of call
-     :query string fields: Limit fields returned. E.g. fields=id,name or
-     fields=items(id,name)
-     File:      ~/Code/Python/python-callfire/callfire/callfire_v2.py
-     Type:      instancemethod
-
-     In [4]: api.send_texts(body=[dict(phoneNumber='13408887345', message='Hi!')]).json()
-     Out[4]:
-     {u'items': [{u'batchId': 11428003374,
+    >>> api.send_texts(body=[dict(phoneNumber='13408887345', message='Hi!')]).json()
+    {u'items': [{u'batchId': 11428003374,
         u'campaignId': 60000313259,
         u'contact': {u'id': 152100378045,
         u'properties': {u'UNDEFINED': u'13471521003'}},
