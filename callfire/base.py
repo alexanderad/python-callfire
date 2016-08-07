@@ -3,8 +3,17 @@ import json
 import logging
 import sys
 import types
-import urllib
-import urllib2
+import six
+try:
+    # py3
+    from urllib.request import urlopen, Request
+    from urllib.parse import urlencode
+    from urllib.error import URLError
+except ImportError:
+    # py2
+    from urllib import urlencode
+    from urllib2 import urlopen, Request, URLError
+
 
 # set default logger handler
 logging.getLogger(__name__).addHandler(logging.NullHandler())
@@ -97,10 +106,11 @@ class BaseAPI(object):
 
         url = '{}{}'.format(self.BASE_URL, path)
         if query:
-            url += '?{}'.format(urllib.urlencode(query))
+            url += '?{}'.format(urlencode(query))
 
-        auth_header = base64.encodestring(
-            '{}:{}'.format(self.username, self.password)).strip()
+        auth_header = base64.b64encode(
+            '{}:{}'.format(self.username, self.password).encode('utf-8')
+        ).strip()
         headers = {
             'Content-Type': 'application/json',
             'Authorization': 'Basic {}'.format(auth_header),
@@ -110,15 +120,15 @@ class BaseAPI(object):
         if body:
             data = json.dumps(body)
 
-        request = urllib2.Request(url, data, headers)
+        request = Request(url, data, headers)
         request.get_method = lambda: method
 
         try:
-            response = urllib2.urlopen(request)
+            response = urlopen(request)
             response.json = types.MethodType(lambda r: json.load(r), response)
             return response
-        except Exception as wrapped_exc:
-            wrapped_exp_body = None
+        except URLError as wrapped_exc:
+            wrapped_exp_body = 'None'
             if hasattr(wrapped_exc, 'fp') and wrapped_exc.fp:
                 wrapped_exp_body = wrapped_exc.fp.read()
 
@@ -127,8 +137,9 @@ class BaseAPI(object):
             self.logger.debug(
                 "Error '%s' in context of method '%s %s' query '%s' body '%s' "
                 "response body: '%s'",
-                str(wrapped_exc), method, path, query, body, wrapped_exc_repr)
+                repr(wrapped_exc), method, path, query, body, wrapped_exc_repr)
 
             exception_type, value, traceback = sys.exc_info()
             exception_wrapper = CallFireError(wrapped_exc, wrapped_exc_repr)
-            raise CallFireError, exception_wrapper, traceback
+
+            six.reraise(CallFireError, exception_wrapper, traceback)

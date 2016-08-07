@@ -1,8 +1,15 @@
 import base64
 import json
 import unittest
-import urllib2
-from StringIO import StringIO
+try:
+    # py2
+    from urllib2 import HTTPError
+    from StringIO import StringIO
+except ImportError:
+    # py3
+    from urllib.error import HTTPError
+    from io import StringIO
+
 
 from flexmock import flexmock
 
@@ -26,20 +33,21 @@ class BaseTest(unittest.TestCase):
         expected_headers = {
             'Content-Type': 'application/json',
             'Authorization': 'Basic {}'.format(
-                base64.encodestring(
-                    '{}:{}'.format(self.base.username, self.base.password)
+                base64.b64encode(
+                    '{}:{}'.format(
+                        self.base.username, self.base.password).encode('utf-8')
                 ).strip()
             )
         }
 
         fake_request = flexmock()
-        (flexmock(urllib2)
+        (flexmock(callfire_base)
          .should_receive('Request')
          .with_args(expected_url, expected_data, expected_headers)
          .and_return(fake_request))
 
         fake_response = flexmock(read=lambda: '{"success": true}')
-        (flexmock(urllib2)
+        (flexmock(callfire_base)
          .should_receive('urlopen')
          .with_args(fake_request)
          .and_return(fake_response))
@@ -83,20 +91,44 @@ class BaseTest(unittest.TestCase):
 
         self.base._put(path, query, body)
 
-    def test_exception_wrapper(self):
+    def test_exception_wrapper_wraps_url_error(self):
         path, query, body = '/path', dict(fields='id'), dict(data='data')
 
         fake_request = flexmock()
-        (flexmock(urllib2)
+        (flexmock(callfire_base)
          .should_receive('Request')
          .and_return(fake_request))
 
-        (flexmock(urllib2)
+        (flexmock(callfire_base)
          .should_receive('urlopen')
-         .and_raise(urllib2.HTTPError('url', 500, 'Internal error', {}, None)))
+         .and_raise(callfire_base.URLError('Internal error')))
 
         with self.assertRaises(callfire_base.CallFireError):
             self.base._request(path, query, body, 'POST')
+
+    def test_exception_wrapper_wraps_http_error(self):
+        path, query, body = '/path', dict(fields='id'), dict(data='data')
+
+        fake_request = flexmock()
+        (flexmock(callfire_base)
+         .should_receive('Request')
+         .and_return(fake_request))
+
+        fake_exception_fp = StringIO('{"error": "Bad Request"}')
+        fake_exception_fp.seek(0)
+        (flexmock(callfire_base)
+         .should_receive('urlopen')
+         .and_raise(
+            HTTPError('url', 400, 'Bad Request', {}, fake_exception_fp)))
+
+        with self.assertRaises(callfire_base.CallFireError) as cm:
+            self.base._request(path, query, body, 'POST')
+
+        e = cm.exception
+        self.assertIsInstance(e, callfire_base.CallFireError)
+        self.assertIsInstance(e.wrapped_exc, HTTPError)
+        self.assertEqual(
+            str(e), 'HTTP Error 400: Bad Request: {"error": "Bad Request"}')
 
 
 if __name__ == '__main__':
