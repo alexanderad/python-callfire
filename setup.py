@@ -11,7 +11,7 @@ with open('LICENSE') as f:
 
 setup(
     name='python-callfire',
-    version='0.9.3',
+    version='0.9.4',
     description='CallFire API thin wrapper.',
     long_description=readme,
     url='https://github.com/iMedicare/python-callfire',
