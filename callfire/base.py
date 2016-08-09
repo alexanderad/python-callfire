@@ -124,7 +124,7 @@ class BaseAPI(object):
 
         data = None
         if body:
-            data = json.dumps(body).encode()
+            data = json.dumps(body).encode('utf-8')
 
         request = Request(url, data, headers)
         request.get_method = lambda: method
@@ -132,7 +132,7 @@ class BaseAPI(object):
         try:
             response = urlopen(request)
             response.json = types.MethodType(
-                lambda r: json.loads(r.read().decode()), response)
+                lambda r: json.loads(r.read().decode('utf-8')), response)
             return response
         except URLError as wrapped_exc:
             wrapped_exp_body = 'None'
