@@ -17,7 +17,7 @@ setup(
     install_requires=['six'],
     tests_require=['nose', 'flexmock'],
     test_suite='tests',
-    packages=find_packages(exclude=('tests', 'swagger')),
+    packages=find_packages(exclude=('tests', 'swagger', '.travis.yml')),
     package_data={'': ['LICENSE']},
     classifiers=(
         'Development Status :: 4 - Beta',
