@@ -1,3 +1,4 @@
+import abc
 import base64
 import json
 import logging
@@ -26,6 +27,102 @@ class CallFireError(Exception):
         super(CallFireError, self).__init__(*args, **kwargs)
 
 
+@six.add_metaclass(abc.ABCMeta)
+class BaseRequest(object):
+    """Class for preparing a customized request."""
+
+    def __init__(self, path, query=None, body=None, **kwargs):
+        self.path = path
+        self.query = query
+        self.body = body
+
+    @property
+    @abc.abstractmethod
+    def additional_headers(self):
+        """Get a dictionary with additional headers for this request."""
+
+    @property
+    @abc.abstractmethod
+    def prepared_body(self):
+        """The prepared body
+
+        This method should do everything necessary in ordr for the
+        underlying body to be useful with this kind of request.
+        """
+
+    def prepare(self, base_url, auth_header, method):
+        """Prepare the underlying request
+
+        The act of preparation involves transforming the body
+        into the right format, setting the required headers.
+
+        :param method: The method with which this request is going to be used
+        :returns: An instance of urllib.Request.
+        """
+
+        url = '{}{}'.format(base_url, self.path)
+        if self.query:
+            url += '?{}'.format(urlencode(self.query))
+
+        headers = {'Authorization': auth_header}
+        headers.update(self.additional_headers)
+
+        request = Request(url, self.prepared_body, headers)
+        request.get_method = lambda: method
+        return request
+
+
+class JSONRequest(BaseRequest):
+    """A request which knows how to process JSON payloads."""
+
+    additional_headers = {'Content-Type': 'application/json'}
+
+    @property
+    def prepared_body(self):
+        if self.body:
+            return json.dumps(self.body).encode('utf-8')
+
+
+class MultipartRequest(BaseRequest):
+    """Request which can be used for multipart form posting."""
+
+    def __init__(self, *args, **kwargs):
+        super(MultipartRequest, self).__init__(*args, **kwargs)
+        self._payload = kwargs.pop('payload', None)
+        self._prepared_body = None
+
+    @property
+    def additional_headers(self):
+        return {
+            'Content-type': 'multipart/form-data; boundary=boundary',
+            'Content-Length': len(self.prepared_body),
+        }
+
+    @staticmethod
+    def generate_multipart(file_stream):
+        parts = []
+        boundary = 'boundary'
+        part_boundary = '--' + boundary
+
+        parts = [
+            part_boundary,
+            'Content-Disposition: form-data; name="file"; filename="file"'
+            '\r\n',
+            file_stream.read(),
+            '--{}--'.format(boundary),
+            '',
+        ]
+        return '\r\n'.join(parts)
+
+    @property
+    def prepared_body(self):
+        if self._prepared_body:
+            return self._prepared_body
+
+        self._prepared_body = self.generate_multipart(self._payload)
+        return self._prepared_body
+
+
 class BaseAPI(object):
     #: Base API url
     BASE_URL = None
@@ -44,7 +141,8 @@ class BaseAPI(object):
         if debug:
             self._add_stderr_logger()
 
-    def _add_stderr_logger(self, level=logging.DEBUG):
+    @staticmethod
+    def _add_stderr_logger(level=logging.DEBUG):
         """Adds stderr logger for debug output.
 
         :param level: set logger level
@@ -58,41 +156,33 @@ class BaseAPI(object):
         logger.setLevel(level)
         logger.debug('Enabled stderr debug logging at %s', __name__)
 
-    def _post(self, path, query=None, body=None):
+    def _post(self, request):
         """Sends a single POST request.
 
-        :param path: request path
-        :param query: request query
-        :param body: request body
+        :param request: The request object to be used.
         """
-        return self._request(path, query, body, 'POST')
+        return self._open_request(request, 'POST')
 
-    def _get(self, path, query=None, body=None):
+    def _get(self, request):
         """Sends a single GET request.
 
-        :param path: request path
-        :param query: request query
-        :param body: request body
+        :param request: The request object to be used.
         """
-        return self._request(path, query, body, 'GET')
+        return self._open_request(request, 'GET')
 
-    def _delete(self, path, query=None, body=None):
+    def _delete(self, request):
         """Sends a single DELETE request.
 
-        :param path: request path
-        :param query: request query
-        :param body: request body
+        :param request: The request object to be used.
         """
-        return self._request(path, query, body, 'DELETE')
+        return self._open_request(request, 'DELETE')
 
-    def _put(self, path, query=None, body=None):
+    def _put(self, request):
         """Sends a single PUT request.
 
-        :param path: request path
-        :param query: request query
-        :param body: request body
+        :param request: The request object to be used.
         """
-        return self._request(path, query, body, 'PUT')
+        return self._open_request(request, 'PUT')
 
     def _get_auth_header(self):
         """Returns authorization header value.
@@ -103,7 +193,7 @@ class BaseAPI(object):
             '{}:{}'.format(self.username, self.password).encode()
         ).strip().decode())
 
-    def _request(self, path, query, body, method):
+    def _open_request(self, request, method):
         """Sends a single API request.
 
         :param path: request path
@@ -111,26 +201,12 @@ class BaseAPI(object):
         :param body: request body
         :param method: request method
         """
-        query = query
-
-        url = '{}{}'.format(self.BASE_URL, path)
-        if query:
-            url += '?{}'.format(urlencode(query))
-
-        headers = {
-            'Content-Type': 'application/json',
-            'Authorization': self._get_auth_header(),
-        }
-
-        data = None
-        if body:
-            data = json.dumps(body).encode('utf-8')
-
-        request = Request(url, data, headers)
-        request.get_method = lambda: method
-
+        prepared = request.prepare(
+            base_url=self.BASE_URL,
+            auth_header=self._get_auth_header(),
+            method=method)
         try:
-            response = urlopen(request)
+            response = urlopen(prepared)
             response.json = types.MethodType(
                 lambda r: json.loads(r.read().decode('utf-8')), response)
             return response
@@ -144,9 +220,10 @@ class BaseAPI(object):
             self.logger.debug(
                 "Error '%s' in context of method '%s %s' query '%s' body '%s' "
                 "response body: '%s'",
-                repr(wrapped_exc), method, path, query, body, wrapped_exc_repr)
+                repr(wrapped_exc), method, request.path,
+                request.query, request.body, wrapped_exc_repr)
 
-            exception_type, value, traceback = sys.exc_info()
+            _, _, traceback = sys.exc_info()
             exception_wrapper = CallFireError(wrapped_exc, wrapped_exc_repr)
 
             six.reraise(CallFireError, exception_wrapper, traceback)
