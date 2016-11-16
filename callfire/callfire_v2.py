@@ -1,4 +1,4 @@
-from .base import BaseAPI
+from .base import BaseAPI, JSONRequest, MultipartRequest
 
 
 class CallFireAPIVersion2(BaseAPI):
@@ -42,7 +42,7 @@ class CallFireAPIVersion2(BaseAPI):
         :query integer intervalEnd: End of the find interval in Unix time
         milliseconds
         """
-        return self._get('/calls', query=query)
+        return self._get(JSONRequest('/calls', query=query))
 
     def send_calls(self, query=None, body=None):
         """Send calls.
@@ -74,7 +74,7 @@ class CallFireAPIVersion2(BaseAPI):
         :body -> CallRecipient string voice: ~
         :body -> CallRecipient string transferNumber: ~
         """
-        return self._post('/calls', query=query, body=body)
+        return self._post(JSONRequest('/calls', query=query, body=body))
 
     def find_call_broadcasts(self, query=None):
         """Find call broadcasts.
@@ -94,7 +94,7 @@ class CallFireAPIVersion2(BaseAPI):
         :query boolean running: Specify if the campaigns should be running or
         not
         """
-        return self._get('/calls/broadcasts', query=query)
+        return self._get(JSONRequest('/calls/broadcasts', query=query))
 
     def create_call_broadcast(self, query=None, body=None):
         """Create a call broadcast.
@@ -129,7 +129,9 @@ class CallFireAPIVersion2(BaseAPI):
         transfers
         :body -> CallBroadcast retryConfig: RetryConfig object
         """
-        return self._post('/calls/broadcasts', query=query, body=body)
+        return self._post(
+            JSONRequest('/calls/broadcasts', query=query, body=body)
+        )
 
     def get_call_broadcast(self, id, query=None):
         """Find a specific call broadcast.
@@ -141,7 +143,9 @@ class CallFireAPIVersion2(BaseAPI):
         :query string fields: Limit fields returned. E.g. fields=id,name or
         fields=items(id,name)
         """
-        return self._get('/calls/broadcasts/{id}'.format(id=id), query=query)
+        return self._get(
+            JSONRequest('/calls/broadcasts/{id}'.format(id=id), query=query)
+        )
 
     def update_call_broadcast(self, id, body=None):
         """Update a call broadcast.
@@ -174,7 +178,9 @@ class CallFireAPIVersion2(BaseAPI):
         transfers
         :body -> CallBroadcast retryConfig: RetryConfig object
         """
-        return self._put('/calls/broadcasts/{id}'.format(id=id), body=body)
+        return self._put(
+            JSONRequest('/calls/broadcasts/{id}'.format(id=id), body=body)
+        )
 
     def archive_voice_broadcast(self, id):
         """Archive voice broadcast.
@@ -183,7 +189,9 @@ class CallFireAPIVersion2(BaseAPI):
 
         :path integer id: Id of voice broadcast to archive
         """
-        return self._post('/calls/broadcasts/{id}/archive'.format(id=id))
+        return self._post(
+            JSONRequest('/calls/broadcasts/{id}/archive'.format(id=id))
+        )
 
     def get_call_broadcast_batches(self, id, query=None):
         """Find batches in a call broadcast.
@@ -199,8 +207,10 @@ class CallFireAPIVersion2(BaseAPI):
         :query integer offset: Offset to the start of a given page. The default
         is 0.
         """
-        return self._get('/calls/broadcasts/{id}/batches'.format(id=id),
-                         query=query)
+        return self._get(
+            JSONRequest('/calls/broadcasts/{id}/batches'.format(id=id),
+                        query=query)
+        )
 
     def add_call_broadcast_batch(self, id, body=None):
         """Add batches to a call broadcast.
@@ -220,8 +230,10 @@ class CallFireAPIVersion2(BaseAPI):
         :body -> BatchRequest string name: Name of batch
         :body -> BatchRequest integer contactListId: Id of contact list
         """
-        return self._post('/calls/broadcasts/{id}/batches'.format(id=id),
-                          body=body)
+        return self._post(
+            JSONRequest('/calls/broadcasts/{id}/batches'.format(id=id),
+                        body=body)
+        )
 
     def get_call_broadcast_calls(self, id, query=None):
         """Find calls in a call broadcast.
@@ -238,8 +250,10 @@ class CallFireAPIVersion2(BaseAPI):
         :query integer offset: Offset to the start of a given page. The default
         is 0.
         """
-        return self._get('/calls/broadcasts/{id}/calls'.format(id=id),
-                         query=query)
+        return self._get(
+            JSONRequest('/calls/broadcasts/{id}/calls'.format(id=id),
+                        query=query)
+        )
 
     def add_call_broadcast_recipients(self, id, query=None, body=None):
         """Add recipients to a call broadcast.
@@ -259,8 +273,11 @@ class CallFireAPIVersion2(BaseAPI):
         :body -> Recipient integer contactId: Id of contact for recipient
         :body -> Recipient string phoneNumber: E.164 number
         """
-        return self._post('/calls/broadcasts/{id}/recipients'.format(id=id),
-                          query=query, body=body)
+        return self._post(
+            JSONRequest('/calls/broadcasts/{id}/recipients'.format(id=id),
+                        query=query,
+                        body=body)
+        )
 
     def start_voice_broadcast(self, id):
         """Start voice broadcast.
@@ -269,7 +286,9 @@ class CallFireAPIVersion2(BaseAPI):
 
         :path integer id: Id of voice broadcast to start
         """
-        return self._post('/calls/broadcasts/{id}/start'.format(id=id))
+        return self._post(
+            JSONRequest('/calls/broadcasts/{id}/start'.format(id=id))
+        )
 
     def get_call_broadcast_stats(self, id, query=None):
         """Get statistics on call broadcast.
@@ -283,8 +302,10 @@ class CallFireAPIVersion2(BaseAPI):
         :query integer begin: ~
         :query integer end: ~
         """
-        return self._get('/calls/broadcasts/{id}/stats'.format(id=id),
-                         query=query)
+        return self._get(
+            JSONRequest('/calls/broadcasts/{id}/stats'.format(id=id),
+                        query=query)
+        )
 
     def stop_voice_broadcast(self, id):
         """Stop voice broadcast.
@@ -293,7 +314,9 @@ class CallFireAPIVersion2(BaseAPI):
 
         :path integer id: Id of voice broadcast to stop
         """
-        return self._post('/calls/broadcasts/{id}/stop'.format(id=id))
+        return self._post(
+            JSONRequest('/calls/broadcasts/{id}/stop'.format(id=id))
+        )
 
     def get_call_recording(self, id, query=None):
         """Get call recording by id.
@@ -304,7 +327,9 @@ class CallFireAPIVersion2(BaseAPI):
         :query string fields: Limit fields returned. E.g. fields=id,name or
         fields=items(id,name)
         """
-        return self._get('/calls/recordings/{id}'.format(id=id), query=query)
+        return self._get(
+            JSONRequest('/calls/recordings/{id}'.format(id=id), query=query)
+        )
 
     def get_call_recording_mp3(self, id):
         """Get call recording in mp3 format.
@@ -313,7 +338,9 @@ class CallFireAPIVersion2(BaseAPI):
 
         :path integer id: ~
         """
-        return self._get('/calls/recordings/{id}.mp3'.format(id=id))
+        return self._get(
+            JSONRequest('/calls/recordings/{id}.mp3'.format(id=id))
+        )
 
     def get_call(self, id, query=None):
         """Find a specific call.
@@ -324,7 +351,9 @@ class CallFireAPIVersion2(BaseAPI):
         :query string fields: Limit fields returned. E.g. fields=id,name or
         fields=items(id,name)
         """
-        return self._get('/calls/{id}'.format(id=id), query=query)
+        return self._get(
+            JSONRequest('/calls/{id}'.format(id=id), query=query)
+        )
 
     def get_call_recordings(self, id, query=None):
         """Get call recordings for a call.
@@ -335,7 +364,10 @@ class CallFireAPIVersion2(BaseAPI):
         :query string fields: Limit fields returned. E.g. fields=id,name or
         fields=items(id,name)
         """
-        return self._get('/calls/{id}/recordings'.format(id=id), query=query)
+        return self._get(
+            JSONRequest('/calls/{id}/recordings'.format(id=id),
+                        query=query)
+        )
 
     def get_call_recording_by_name(self, id, name, query=None):
         """Get call recording by name.
@@ -348,8 +380,11 @@ class CallFireAPIVersion2(BaseAPI):
         fields=items(id,name)
         """
         return self._get(
-            '/calls/{id}/recordings/{name}'.format(id=id, name=name),
-            query=query)
+            JSONRequest(
+                '/calls/{id}/recordings/{name}'.format(id=id, name=name),
+                query=query
+            )
+        )
 
     def get_call_recording_mp3_by_name(self, id, name):
         """Get call mp3 recording by name.
@@ -360,7 +395,9 @@ class CallFireAPIVersion2(BaseAPI):
         :path string name: ~
         """
         return self._get(
-            '/calls/{id}/recordings/{name}.mp3'.format(id=id, name=name))
+            JSONRequest('/calls/{id}/recordings/{name}.mp3'
+                        .format(id=id, name=name))
+        )
 
     def get_campaign_batch(self, id, query=None):
         """Find a specific batch.
@@ -372,7 +409,9 @@ class CallFireAPIVersion2(BaseAPI):
         :query string fields: Limit fields returned. E.g. fields=id,name or
         fields=items(id,name)
         """
-        return self._get('/campaigns/batches/{id}'.format(id=id), query=query)
+        return self._get(
+            JSONRequest('/campaigns/batches/{id}'.format(id=id), query=query)
+        )
 
     def update_campaign_batch(self, id, body=None):
         """Update a batch.
@@ -392,7 +431,9 @@ class CallFireAPIVersion2(BaseAPI):
         :body -> Batch integer id: Id of batch
         :body -> Batch integer size: Size of batch
         """
-        return self._put('/campaigns/batches/{id}'.format(id=id), body=body)
+        return self._put(
+            JSONRequest('/campaigns/batches/{id}'.format(id=id), body=body)
+        )
 
     def find_campaign_sounds(self, query=None):
         """Find sounds.
@@ -408,7 +449,7 @@ class CallFireAPIVersion2(BaseAPI):
         :query string fields: Limit fields returned. E.g. fields=id,name or
         fields=items(id,name)
         """
-        return self._get('/campaigns/sounds', query=query)
+        return self._get(JSONRequest('/campaigns/sounds', query=query))
 
     def post_call_campaign_sound(self, query=None, body=None):
         """Add sound via call.
@@ -425,9 +466,11 @@ class CallFireAPIVersion2(BaseAPI):
         record sound
         :body -> CallCreateSound string name: Name of sound to create
         """
-        return self._post('/campaigns/sounds/calls', query=query, body=body)
+        return self._post(
+            JSONRequest('/campaigns/sounds/calls', query=query, body=body)
+        )
 
-    def post_file_campaign_sound(self, query=None):
+    def post_file_campaign_sound(self, query=None, payload=None):
         """Add sound via file.
 
         Use this API to create a campaign sound file via a supplied .mp3 or
@@ -436,7 +479,12 @@ class CallFireAPIVersion2(BaseAPI):
         :query string fields: Limit fields returned. E.g. fields=id,name or
         fields=items(id,name)
         """
-        return self._post('/campaigns/sounds/files', query=query)
+        return self._post(
+            MultipartRequest(
+                '/campaigns/sounds/files',
+                query=query,
+                payload=payload)
+        )
 
     def post_campaign_sound(self, query=None, body=None):
         """Add sound via text-to-speech.
@@ -454,7 +502,9 @@ class CallFireAPIVersion2(BaseAPI):
         :body -> TextToSpeech string voice: The voice to be used (MALE1,
         FEMALE1 , FEMALE2, SPANISH1, FRENCHCANADIAN1)
         """
-        return self._post('/campaigns/sounds/tts', query=query, body=body)
+        return self._post(
+            JSONRequest('/campaigns/sounds/tts', query=query, body=body)
+        )
 
     def get_campaign_sound(self, id, query=None):
         """Find a specific sound.
@@ -467,7 +517,9 @@ class CallFireAPIVersion2(BaseAPI):
         :query string fields: Limit fields returned. E.g. fields=id,name or
         fields=items(id,name)
         """
-        return self._get('/campaigns/sounds/{id}'.format(id=id), query=query)
+        return self._get(
+            JSONRequest('/campaigns/sounds/{id}'.format(id=id), query=query)
+        )
 
     def get_campaign_sound_data_mp3(self, id):
         """Download a MP3 sound.
@@ -477,7 +529,9 @@ class CallFireAPIVersion2(BaseAPI):
 
         :path integer id: Id of CampaignSound
         """
-        return self._get('/campaigns/sounds/{id}.mp3'.format(id=id))
+        return self._get(
+            JSONRequest('/campaigns/sounds/{id}.mp3'.format(id=id))
+        )
 
     def get_campaign_sound_data_wav(self, id):
         """Download a WAV sound.
@@ -487,7 +541,9 @@ class CallFireAPIVersion2(BaseAPI):
 
         :path integer id: Id of CampaignSound
         """
-        return self._get('/campaigns/sounds/{id}.wav'.format(id=id))
+        return self._get(
+            JSONRequest('/campaigns/sounds/{id}.wav'.format(id=id))
+        )
 
     def find_contacts(self, query=None):
         """Find contacts.
@@ -509,7 +565,7 @@ class CallFireAPIVersion2(BaseAPI):
         :query string propertyName: Name of contact property to search by
         :query string propertyValue: Value of contact property to search by
         """
-        return self._get('/contacts', query=query)
+        return self._get(JSONRequest('/contacts', query=query))
 
     def create_contacts(self, body=None):
         """Create contacts.
@@ -534,7 +590,7 @@ class CallFireAPIVersion2(BaseAPI):
         :body -> Contact integer id: Id of contact
         :body -> Contact string homePhone: E.164 number
         """
-        return self._post('/contacts', body=body)
+        return self._post(JSONRequest('/contacts', body=body))
 
     def find_dnc_contacts(self, query=None):
         """Find DNCs.
@@ -555,7 +611,7 @@ class CallFireAPIVersion2(BaseAPI):
         :query boolean callDnc: Is it a Call DNC
         :query boolean textDnc: Is it a Text DNC
         """
-        return self._get('/contacts/dncs', query=query)
+        return self._get(JSONRequest('/contacts/dncs', query=query))
 
     def update_dnc_number(self, body=None):
         """Update a DNC.
@@ -569,7 +625,7 @@ class CallFireAPIVersion2(BaseAPI):
         :body -> DoNotContact string number: E.164 number
         :body -> DoNotContact integer listId: Id of list
         """
-        return self._put('/contacts/dncs', body=body)
+        return self._put(JSONRequest('/contacts/dncs', body=body))
 
     def find_contact_lists(self, query=None):
         """Find contact lists.
@@ -585,7 +641,7 @@ class CallFireAPIVersion2(BaseAPI):
         is 0.
         :query string name: Name or partial name of contact list
         """
-        return self._get('/contacts/lists', query=query)
+        return self._get(JSONRequest('/contacts/lists', query=query))
 
     def create_contact_list(self, body=None):
         """Create contact lists.
@@ -613,16 +669,18 @@ class CallFireAPIVersion2(BaseAPI):
         :body -> CreateContactListRequest array contacts: List of Contact
         objects
         """
-        return self._post('/contacts/lists', body=body)
+        return self._post(JSONRequest('/contacts/lists', body=body))
 
-    def create_contact_list_from_file(self):
+    def create_contact_list_from_file(self, payload=None):
         """Create contact list from file.
 
         Create a contact list for use with campaigns through uploading a .csv
         file
 
         """
-        return self._post('/contacts/lists/upload')
+        return self._post(
+            MultipartRequest('/contacts/lists/upload', payload=payload)
+        )
 
     def delete_contact_list(self, id):
         """Delete a contact list.
@@ -631,7 +689,9 @@ class CallFireAPIVersion2(BaseAPI):
 
         :path integer id: Id of contact list to be deleted
         """
-        return self._delete('/contacts/lists/{id}'.format(id=id))
+        return self._delete(
+            JSONRequest('/contacts/lists/{id}'.format(id=id))
+        )
 
     def get_contact_list(self, id, query=None):
         """Find a specific contact list.
@@ -642,7 +702,9 @@ class CallFireAPIVersion2(BaseAPI):
         :query string fields: Limit fields returned. E.g. fields=id,name or
         fields=items(id,name)
         """
-        return self._get('/contacts/lists/{id}'.format(id=id), query=query)
+        return self._get(
+            JSONRequest('/contacts/lists/{id}'.format(id=id), query=query)
+        )
 
     def update_contact_list(self, id, body=None):
         """Update a contact list.
@@ -654,7 +716,9 @@ class CallFireAPIVersion2(BaseAPI):
         :body body: request
         :body -> UpdateContactListRequest string name: Name of list
         """
-        return self._put('/contacts/lists/{id}'.format(id=id), body=body)
+        return self._put(
+            JSONRequest('/contacts/lists/{id}'.format(id=id), body=body)
+        )
 
     def remove_contact_list_items(self, id, query=None):
         """Delete contacts from a contact list.
@@ -665,8 +729,12 @@ class CallFireAPIVersion2(BaseAPI):
         :path integer id: Id of Contact entity inside the CallFire system.
         :query array contactId: ~
         """
-        return self._delete('/contacts/lists/{id}/items'.format(id=id),
-                            query=query)
+        return self._delete(
+            JSONRequest(
+                '/contacts/lists/{id}/items'.format(id=id),
+                query=query
+            )
+        )
 
     def get_contact_list_items(self, id, query=None):
         """Find contacts in a contact list.
@@ -682,8 +750,12 @@ class CallFireAPIVersion2(BaseAPI):
         :query integer offset: Offset to the start of a given page. The default
         is 0.
         """
-        return self._get('/contacts/lists/{id}/items'.format(id=id),
-                         query=query)
+        return self._get(
+            JSONRequest(
+                '/contacts/lists/{id}/items'.format(id=id),
+                query=query
+            )
+        )
 
     def add_contact_list_items(self, id, body=None):
         """Add contacts to a contact list.
@@ -702,8 +774,9 @@ class CallFireAPIVersion2(BaseAPI):
         :body -> AddContactListContactsRequest array contacts: List of Contact
         object
         """
-        return self._post('/contacts/lists/{id}/items'.format(id=id),
-                          body=body)
+        return self._post(
+            JSONRequest('/contacts/lists/{id}/items'.format(id=id), body=body)
+        )
 
     def remove_contact_list_item(self, id, contactId):
         """Delete a contact from a contact list.
@@ -714,8 +787,12 @@ class CallFireAPIVersion2(BaseAPI):
         :path integer contactId: Id of contact
         """
         return self._delete(
-            '/contacts/lists/{id}/items/{contactId}'.format(id=id,
-                                                            contactId=contactId))
+            JSONRequest(
+                '/contacts/lists/{id}/items/{contactId}'.format(
+                    id=id, contactId=contactId
+                )
+            )
+        )
 
     def delete_contact(self, id):
         """Delete a contact.
@@ -726,7 +803,7 @@ class CallFireAPIVersion2(BaseAPI):
 
         :path integer id: Id of contact
         """
-        return self._delete('/contacts/{id}'.format(id=id))
+        return self._delete(JSONRequest('/contacts/{id}'.format(id=id)))
 
     def get_contact(self, id, query=None):
         """Find a specific contact.
@@ -739,7 +816,9 @@ class CallFireAPIVersion2(BaseAPI):
         :query string fields: Limit fields returned. E.g. fields=id,name or
         fields=items(id,name)
         """
-        return self._get('/contacts/{id}'.format(id=id), query=query)
+        return self._get(
+            JSONRequest('/contacts/{id}'.format(id=id), query=query)
+        )
 
     def update_contact(self, id, body=None):
         """Update a contact.
@@ -763,7 +842,9 @@ class CallFireAPIVersion2(BaseAPI):
         :body -> Contact integer id: Id of contact
         :body -> Contact string homePhone: E.164 number
         """
-        return self._put('/contacts/{id}'.format(id=id), body=body)
+        return self._put(
+            JSONRequest('/contacts/{id}'.format(id=id), body=body)
+        )
 
     def get_contact_history(self, id, query=None):
         """Find a contact's history.
@@ -777,7 +858,9 @@ class CallFireAPIVersion2(BaseAPI):
         :query integer offset: Offset to the start of a given page. The default
         is 0.
         """
-        return self._get('/contacts/{id}/history'.format(id=id), query=query)
+        return self._get(
+            JSONRequest('/contacts/{id}/history'.format(id=id), query=query)
+        )
 
     def find_keywords(self, query=None):
         """Find keywords.
@@ -789,7 +872,7 @@ class CallFireAPIVersion2(BaseAPI):
 
         :query array keywords: Keyword to search for
         """
-        return self._get('/keywords', query=query)
+        return self._get(JSONRequest('/keywords', query=query))
 
     def find_keyword_leases(self, query=None):
         """Find keyword leases.
@@ -804,7 +887,7 @@ class CallFireAPIVersion2(BaseAPI):
         :query string fields: Limit fields returned. E.g. fields=id,name or
         fields=items(id,name)
         """
-        return self._get('/keywords/leases', query=query)
+        return self._get(JSONRequest('/keywords/leases', query=query))
 
     def get_keyword_lease(self, keyword, query=None):
         """Find a specific lease.
@@ -815,8 +898,12 @@ class CallFireAPIVersion2(BaseAPI):
         :query string fields: Limit fields returned. E.g. fields=id,name or
         fields=items(id,name)
         """
-        return self._get('/keywords/leases/{keyword}'.format(keyword=keyword),
-                         query=query)
+        return self._get(
+            JSONRequest(
+                '/keywords/leases/{keyword}'.format(keyword=keyword),
+                query=query
+            )
+        )
 
     def update_keyword_lease(self, keyword, body=None):
         """Update a lease.
@@ -836,8 +923,12 @@ class CallFireAPIVersion2(BaseAPI):
         lease at end of each billing cycle
         :body -> KeywordLease string shortCode: Short code assigned to keyword
         """
-        return self._put('/keywords/leases/{keyword}'.format(keyword=keyword),
-                         body=body)
+        return self._put(
+            JSONRequest(
+                '/keywords/leases/{keyword}'.format(keyword=keyword),
+                body=body
+            )
+        )
 
     def is_keyword_available(self, keyword):
         """Check for a specific keyword.
@@ -848,7 +939,10 @@ class CallFireAPIVersion2(BaseAPI):
         :path string keyword: Keyword to search for
         """
         return self._get(
-            '/keywords/{keyword}/available'.format(keyword=keyword))
+            JSONRequest(
+                '/keywords/{keyword}/available'.format(keyword=keyword)
+            )
+        )
 
     def get_account(self):
         """Find account details.
@@ -857,7 +951,7 @@ class CallFireAPIVersion2(BaseAPI):
         basic account permissions.
 
         """
-        return self._get('/me/account')
+        return self._get(JSONRequest('/me/account'))
 
     def find_api_credentials(self, query=None):
         """Find api credentials.
@@ -872,7 +966,7 @@ class CallFireAPIVersion2(BaseAPI):
         :query integer offset: Offset to the start of a given page. The default
         is 0.
         """
-        return self._get('/me/api/credentials', query=query)
+        return self._get(JSONRequest('/me/api/credentials', query=query))
 
     def create_api_credential(self, body=None):
         """Create api credentials.
@@ -890,7 +984,7 @@ class CallFireAPIVersion2(BaseAPI):
         :body -> ApiCredential integer id: Id of api credential
         :body -> ApiCredential string name: Name of api credential
         """
-        return self._post('/me/api/credentials', body=body)
+        return self._post(JSONRequest('/me/api/credentials', body=body))
 
     def delete_api_credential(self, id):
         """Delete api credentials.
@@ -900,7 +994,9 @@ class CallFireAPIVersion2(BaseAPI):
 
         :path integer id: Id of api credential
         """
-        return self._delete('/me/api/credentials/{id}'.format(id=id))
+        return self._delete(
+            JSONRequest('/me/api/credentials/{id}'.format(id=id))
+        )
 
     def get_api_credential(self, id, query=None):
         """Find a specific api credential.
@@ -911,7 +1007,9 @@ class CallFireAPIVersion2(BaseAPI):
         :query string fields: Limit fields returned. E.g. fields=id,name or
         fields=items(id,name)
         """
-        return self._get('/me/api/credentials/{id}'.format(id=id), query=query)
+        return self._get(
+            JSONRequest('/me/api/credentials/{id}'.format(id=id), query=query)
+        )
 
     def get_billing_plan_usage(self):
         """Find plan usage.
@@ -920,7 +1018,7 @@ class CallFireAPIVersion2(BaseAPI):
         the current month.
 
         """
-        return self._get('/me/billing/plan-usage')
+        return self._get(JSONRequest('/me/billing/plan-usage'))
 
     def get_caller_ids(self):
         """Find caller ids.
@@ -930,7 +1028,7 @@ class CallFireAPIVersion2(BaseAPI):
         verification code.
 
         """
-        return self._get('/me/callerids')
+        return self._get(JSONRequest('/me/callerids'))
 
     def send_verification_code_to_caller_id(self, callerid):
         """Create a caller id.
@@ -942,7 +1040,9 @@ class CallFireAPIVersion2(BaseAPI):
         :path string callerid: E.164 number without the '+' that needs to be
         verified
         """
-        return self._post('/me/callerids/{callerid}'.format(callerid=callerid))
+        return self._post(
+            JSONRequest('/me/callerids/{callerid}'.format(callerid=callerid))
+        )
 
     def verify_caller_id(self, callerid, body=None):
         """Verify a caller id.
@@ -958,16 +1058,22 @@ class CallFireAPIVersion2(BaseAPI):
         :body -> CallerIdVerificationRequest string verificationCode: The code
         used to verify a caller id number
         """
-        return self._post('/me/callerids/{callerid}/verification-code'.format(
-            callerid=callerid), body=body)
+        return self._post(
+            JSONRequest(
+                '/me/callerids/{callerid}/verification-code'.format(
+                    callerid=callerid
+                ),
+                body=body
+            )
+        )
 
-    def create_media(self):
+    def create_media(self, payload=None):
         """Create media.
 
         Create media for use in text messages
 
         """
-        return self._post('/media')
+        return self._post(MultipartRequest('/media', payload=payload))
 
     def get_media_data_by_key(self, key, extension):
         """Download media by extension.
@@ -977,8 +1083,13 @@ class CallFireAPIVersion2(BaseAPI):
         :path string key: ~
         :path string extension: ~
         """
-        return self._get('/media/public/{key}.{extension}'.format(key=key,
-                                                                  extension=extension))
+        return self._get(
+            JSONRequest(
+                '/media/public/{key}.{extension}'.format(
+                    key=key, extension=extension
+                )
+            )
+        )
 
     def get_media(self, id, query=None):
         """Get a specific media.
@@ -989,7 +1100,9 @@ class CallFireAPIVersion2(BaseAPI):
         :query string fields: Limit fields returned. E.g. fields=id,name or
         fields=items(id,name)
         """
-        return self._get('/media/{id}'.format(id=id), query=query)
+        return self._get(
+            JSONRequest('/media/{id}'.format(id=id), query=query)
+        )
 
     def get_media_data(self, id, extension):
         """Download media by extension.
@@ -1000,7 +1113,12 @@ class CallFireAPIVersion2(BaseAPI):
         :path string extension: ~
         """
         return self._get(
-            '/media/{id}.{extension}'.format(id=id, extension=extension))
+            JSONRequest(
+                '/media/{id}.{extension}'.format(
+                    id=id, extension=extension
+                )
+            )
+        )
 
     def get_media_data_binary(self, id):
         """Download a MP3 media.
@@ -1009,7 +1127,7 @@ class CallFireAPIVersion2(BaseAPI):
 
         :path integer id: ~
         """
-        return self._get('/media/{id}/file'.format(id=id))
+        return self._get(JSONRequest('/media/{id}/file'.format(id=id)))
 
     def find_number_leases(self, query=None):
         """Find leases.
@@ -1032,7 +1150,7 @@ class CallFireAPIVersion2(BaseAPI):
         :query string fields: Limit fields returned. E.g. fields=id,name or
         fields=items(id,name)
         """
-        return self._get('/numbers/leases', query=query)
+        return self._get(JSONRequest('/numbers/leases', query=query))
 
     def find_number_lease_configs(self, query=None):
         """Find lease configs.
@@ -1054,7 +1172,7 @@ class CallFireAPIVersion2(BaseAPI):
         :query string fields: Limit fields returned. E.g. fields=id,name or
         fields=items(id,name)
         """
-        return self._get('/numbers/leases/configs', query=query)
+        return self._get(JSONRequest('/numbers/leases/configs', query=query))
 
     def get_number_lease_config(self, number, query=None):
         """Find a specific lease config.
@@ -1066,8 +1184,11 @@ class CallFireAPIVersion2(BaseAPI):
         fields=items(id,name)
         """
         return self._get(
-            '/numbers/leases/configs/{number}'.format(number=number),
-            query=query)
+            JSONRequest(
+                '/numbers/leases/configs/{number}'.format(number=number),
+                query=query
+            )
+        )
 
     def update_number_lease_config(self, number, body=None):
         """Update a lease config.
@@ -1083,8 +1204,11 @@ class CallFireAPIVersion2(BaseAPI):
         :body -> NumberConfig ivrInboundConfig: IvrInboundConfig object
         """
         return self._put(
-            '/numbers/leases/configs/{number}'.format(number=number),
-            body=body)
+            JSONRequest(
+                '/numbers/leases/configs/{number}'.format(number=number),
+                body=body
+            )
+        )
 
     def get_number_lease(self, number, query=None):
         """Find a specific lease.
@@ -1095,8 +1219,12 @@ class CallFireAPIVersion2(BaseAPI):
         :query string fields: Limit fields returned. E.g. fields=id,name or
         fields=items(id,name)
         """
-        return self._get('/numbers/leases/{number}'.format(number=number),
-                         query=query)
+        return self._get(
+            JSONRequest(
+                '/numbers/leases/{number}'.format(number=number),
+                query=query
+            )
+        )
 
     def update_number_lease(self, number, body=None):
         """Update a lease.
@@ -1123,8 +1251,12 @@ class CallFireAPIVersion2(BaseAPI):
         lease at end of each billing cycle
         :body -> NumberLease boolean tollFree: Is number toll-free
         """
-        return self._put('/numbers/leases/{number}'.format(number=number),
-                         body=body)
+        return self._put(
+            JSONRequest(
+                '/numbers/leases/{number}'.format(number=number),
+                body=body
+            )
+        )
 
     def find_numbers_local(self, query=None):
         """Find local numbers.
@@ -1143,7 +1275,7 @@ class CallFireAPIVersion2(BaseAPI):
         :query string fields: Limit fields returned. E.g. fields=id,name or
         fields=items(id,name)
         """
-        return self._get('/numbers/local', query=query)
+        return self._get(JSONRequest('/numbers/local', query=query))
 
     def find_number_regions(self, query=None):
         """Find number regions.
@@ -1165,7 +1297,7 @@ class CallFireAPIVersion2(BaseAPI):
         :query string fields: Limit fields returned. E.g. fields=id,name or
         fields=items(id,name)
         """
-        return self._get('/numbers/regions', query=query)
+        return self._get(JSONRequest('/numbers/regions', query=query))
 
     def find_numbers_tollfree(self, query=None):
         """Find tollfree numbers.
@@ -1178,7 +1310,7 @@ class CallFireAPIVersion2(BaseAPI):
         :query string fields: Limit fields returned. E.g. fields=id,name or
         fields=items(id,name)
         """
-        return self._get('/numbers/tollfree', query=query)
+        return self._get(JSONRequest('/numbers/tollfree', query=query))
 
     def order_keywords(self, body=None):
         """Purchase keywords.
@@ -1190,7 +1322,7 @@ class CallFireAPIVersion2(BaseAPI):
         :body body: request
         :body -> KeywordPurchaseRequest array keywords: List of keywords
         """
-        return self._post('/orders/keywords', body=body)
+        return self._post(JSONRequest('/orders/keywords', body=body))
 
     def order_numbers(self, body=None):
         """Purchase numbers.
@@ -1218,7 +1350,7 @@ class CallFireAPIVersion2(BaseAPI):
         :body -> NumberPurchaseRequest string rateCenter: Rate center of
         requested numbers
         """
-        return self._post('/orders/numbers', body=body)
+        return self._post(JSONRequest('/orders/numbers', body=body))
 
     def get_order(self, id, query=None):
         """Find a specific order.
@@ -1229,7 +1361,9 @@ class CallFireAPIVersion2(BaseAPI):
         :query string fields: Limit fields returned. E.g. fields=id,name or
         fields=items(id,name)
         """
-        return self._get('/orders/{id}'.format(id=id), query=query)
+        return self._get(
+            JSONRequest('/orders/{id}'.format(id=id), query=query)
+        )
 
     def find_texts(self, query=None):
         """Find texts.
@@ -1265,7 +1399,7 @@ class CallFireAPIVersion2(BaseAPI):
         :query integer intervalEnd: End of the find interval in Unix time
         milliseconds
         """
-        return self._get('/texts', query=query)
+        return self._get(JSONRequest('/texts', query=query))
 
     def send_texts(self, query=None, body=None):
         """Send texts.
@@ -1286,7 +1420,7 @@ class CallFireAPIVersion2(BaseAPI):
         :body -> TextRecipient string message: Text message
         :body -> TextRecipient array media: ~
         """
-        return self._post('/texts', query=query, body=body)
+        return self._post(JSONRequest('/texts', query=query, body=body))
 
     def find_text_auto_replys(self, query=None):
         """Find auto replies.
@@ -1302,7 +1436,7 @@ class CallFireAPIVersion2(BaseAPI):
         is 0.
         :query string number: E.164 number that contains a TextAutoReply
         """
-        return self._get('/texts/auto-replys', query=query)
+        return self._get(JSONRequest('/texts/auto-replys', query=query))
 
     def create_text_auto_reply(self, body=None):
         """Create an auto reply.
@@ -1319,7 +1453,9 @@ class CallFireAPIVersion2(BaseAPI):
         :body -> TextAutoReply string keyword: Keyword for text auto reply
         :body -> TextAutoReply string number: E.164 number for text auto reply
         """
-        return self._post('/texts/auto-replys', body=body)
+        return self._post(
+            JSONRequest('/texts/auto-replys', body=body)
+        )
 
     def delete_text_auto_reply(self, id):
         """Delete an auto reply.
@@ -1329,7 +1465,9 @@ class CallFireAPIVersion2(BaseAPI):
 
         :path integer id: Id of text auto reply
         """
-        return self._delete('/texts/auto-replys/{id}'.format(id=id))
+        return self._delete(
+            JSONRequest('/texts/auto-replys/{id}'.format(id=id))
+        )
 
     def get_text_auto_reply(self, id, query=None):
         """Find a specific auto reply.
@@ -1340,7 +1478,9 @@ class CallFireAPIVersion2(BaseAPI):
         :query string fields: Limit fields returned. E.g. fields=id,name or
         fields=items(id,name)
         """
-        return self._get('/texts/auto-replys/{id}'.format(id=id), query=query)
+        return self._get(
+            JSONRequest('/texts/auto-replys/{id}'.format(id=id), query=query)
+        )
 
     def find_text_broadcasts(self, query=None):
         """Find text broadcasts.
@@ -1359,7 +1499,7 @@ class CallFireAPIVersion2(BaseAPI):
         :query string name: Name of text broadcast
         :query boolean running: Is broadcast running
         """
-        return self._get('/texts/broadcasts', query=query)
+        return self._get(JSONRequest('/texts/broadcasts', query=query))
 
     def create_text_broadcast(self, query=None, body=None):
         """Create a text broadcast.
@@ -1391,7 +1531,9 @@ class CallFireAPIVersion2(BaseAPI):
         :body -> TextBroadcast integer id: Id of broadcast
         :body -> TextBroadcast retryConfig: RetryConfig object
         """
-        return self._post('/texts/broadcasts', query=query, body=body)
+        return self._post(
+            JSONRequest('/texts/broadcasts', query=query, body=body)
+        )
 
     def get_text_broadcast(self, id, query=None):
         """Find a specific text broadcast.
@@ -1402,7 +1544,9 @@ class CallFireAPIVersion2(BaseAPI):
         :query string fields: Limit fields returned. E.g. fields=id,name or
         fields=items(id,name)
         """
-        return self._get('/texts/broadcasts/{id}'.format(id=id), query=query)
+        return self._get(
+            JSONRequest('/texts/broadcasts/{id}'.format(id=id), query=query)
+        )
 
     def update_text_broadcast(self, id, body=None):
         """Update a text broadcast.
@@ -1433,7 +1577,9 @@ class CallFireAPIVersion2(BaseAPI):
         :body -> TextBroadcast integer id: Id of broadcast
         :body -> TextBroadcast retryConfig: RetryConfig object
         """
-        return self._put('/texts/broadcasts/{id}'.format(id=id), body=body)
+        return self._put(
+            JSONRequest('/texts/broadcasts/{id}'.format(id=id), body=body)
+        )
 
     def archive_text_broadcast(self, id):
         """Archive text broadcast.
@@ -1442,7 +1588,9 @@ class CallFireAPIVersion2(BaseAPI):
 
         :path integer id: Id of text broadcast to archive
         """
-        return self._post('/texts/broadcasts/{id}/archive'.format(id=id))
+        return self._post(
+            JSONRequest('/texts/broadcasts/{id}/archive'.format(id=id))
+        )
 
     def get_text_broadcast_batches(self, id, query=None):
         """Find batches in a text broadcast.
@@ -1458,8 +1606,12 @@ class CallFireAPIVersion2(BaseAPI):
         :query integer offset: Offset to the start of a given page. The default
         is 0.
         """
-        return self._get('/texts/broadcasts/{id}/batches'.format(id=id),
-                         query=query)
+        return self._get(
+            JSONRequest(
+                '/texts/broadcasts/{id}/batches'.format(id=id),
+                query=query
+            )
+        )
 
     def add_text_broadcast_batch(self, id, body=None):
         """Add batches to a text broadcast.
@@ -1479,8 +1631,12 @@ class CallFireAPIVersion2(BaseAPI):
         :body -> BatchRequest string name: Name of batch
         :body -> BatchRequest integer contactListId: Id of contact list
         """
-        return self._post('/texts/broadcasts/{id}/batches'.format(id=id),
-                          body=body)
+        return self._post(
+            JSONRequest(
+                '/texts/broadcasts/{id}/batches'.format(id=id),
+                body=body
+            )
+        )
 
     def add_text_broadcast_recipients(self, id, query=None, body=None):
         """Add recipients to a text broadcast.
@@ -1502,8 +1658,13 @@ class CallFireAPIVersion2(BaseAPI):
         :body -> TextRecipient string message: Text message
         :body -> TextRecipient array media: ~
         """
-        return self._post('/texts/broadcasts/{id}/recipients'.format(id=id),
-                          query=query, body=body)
+        return self._post(
+            JSONRequest(
+                '/texts/broadcasts/{id}/recipients'.format(id=id),
+                query=query,
+                body=body
+            )
+        )
 
     def start_text_broadcast(self, id):
         """Start text broadcast.
@@ -1512,7 +1673,9 @@ class CallFireAPIVersion2(BaseAPI):
 
         :path integer id: Id of text broadcast to start
         """
-        return self._post('/texts/broadcasts/{id}/start'.format(id=id))
+        return self._post(
+            JSONRequest('/texts/broadcasts/{id}/start'.format(id=id))
+        )
 
     def get_text_broadcast_stats(self, id, query=None):
         """Get statistics on text broadcast.
@@ -1525,8 +1688,11 @@ class CallFireAPIVersion2(BaseAPI):
         :query integer begin: ~
         :query integer end: ~
         """
-        return self._get('/texts/broadcasts/{id}/stats'.format(id=id),
-                         query=query)
+        return self._get(
+            JSONRequest(
+                '/texts/broadcasts/{id}/stats'.format(id=id),
+                query=query)
+        )
 
     def stop_text_broadcast(self, id):
         """Stop text broadcast.
@@ -1535,7 +1701,9 @@ class CallFireAPIVersion2(BaseAPI):
 
         :path integer id: Id of text broadcast to stop
         """
-        return self._post('/texts/broadcasts/{id}/stop'.format(id=id))
+        return self._post(
+            JSONRequest('/texts/broadcasts/{id}/stop'.format(id=id))
+        )
 
     def get_text_broadcast_texts(self, id, query=None):
         """Find texts in a text broadcast.
@@ -1552,8 +1720,11 @@ class CallFireAPIVersion2(BaseAPI):
         :query integer offset: Offset to the start of a given page. The default
         is 0.
         """
-        return self._get('/texts/broadcasts/{id}/texts'.format(id=id),
-                         query=query)
+        return self._get(
+            JSONRequest(
+                '/texts/broadcasts/{id}/texts'.format(id=id),
+                query=query)
+        )
 
     def get_text(self, id, query=None):
         """Find a specific text.
@@ -1564,7 +1735,9 @@ class CallFireAPIVersion2(BaseAPI):
         :query string fields: Limit fields returned. E.g. fields=id,name or
         fields=items(id,name)
         """
-        return self._get('/texts/{id}'.format(id=id), query=query)
+        return self._get(
+            JSONRequest('/texts/{id}'.format(id=id), query=query)
+        )
 
     def find_webhooks(self, query=None):
         """Find webhooks.
@@ -1585,7 +1758,7 @@ class CallFireAPIVersion2(BaseAPI):
         :query string callback: Callback URL
         :query boolean enabled: Is webhook enabled
         """
-        return self._get('/webhooks', query=query)
+        return self._get(JSONRequest('/webhooks', query=query))
 
     def create_webhook(self, body=None):
         """Create a webhook.
@@ -1599,7 +1772,7 @@ class CallFireAPIVersion2(BaseAPI):
 
         :body body: webhook
         """
-        return self._post('/webhooks', body=body)
+        return self._post(JSONRequest('/webhooks', body=body))
 
     def find_webhook_resources(self, query=None):
         """Find webhook resources.
@@ -1613,7 +1786,7 @@ class CallFireAPIVersion2(BaseAPI):
         :query string fields: Limit fields returned. E.g. fields=id,name or
         fields=items(id,name)
         """
-        return self._get('/webhooks/resources', query=query)
+        return self._get(JSONRequest('/webhooks/resources', query=query))
 
     def get_webhook_resource(self, resource, query=None):
         """Find specific webhook resource.
@@ -1626,8 +1799,11 @@ class CallFireAPIVersion2(BaseAPI):
         fields=items(id,name)
         """
         return self._get(
-            '/webhooks/resources/{resource}'.format(resource=resource),
-            query=query)
+            JSONRequest(
+                '/webhooks/resources/{resource}'.format(resource=resource),
+                query=query
+            )
+        )
 
     def delete_webhook(self, id):
         """Delete a webhook.
@@ -1636,7 +1812,7 @@ class CallFireAPIVersion2(BaseAPI):
 
         :path integer id: Id of webhook.
         """
-        return self._delete('/webhooks/{id}'.format(id=id))
+        return self._delete(JSONRequest('/webhooks/{id}'.format(id=id)))
 
     def update_webhook(self, id, body=None):
         """Update a webhook.
@@ -1647,4 +1823,6 @@ class CallFireAPIVersion2(BaseAPI):
         :path integer id: Id of webhook.
         :body body: webhook
         """
-        return self._put('/webhooks/{id}'.format(id=id), body=body)
+        return self._put(
+            JSONRequest('/webhooks/{id}'.format(id=id), body=body)
+        )
