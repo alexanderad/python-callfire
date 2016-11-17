@@ -7,7 +7,7 @@ with open('README.rst') as f:
 
 setup(
     name='python-callfire',
-    version='0.9.6',
+    version='0.10.0',
     description='CallFire API thin wrapper.',
     long_description=readme,
     url='https://github.com/iMedicare/python-callfire',
