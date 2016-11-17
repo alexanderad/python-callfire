@@ -5,6 +5,10 @@ import urllib2
 
 class Swagger2Definition(object):
     """Swagger to class definition adapter."""
+
+    JSONRequest = 'JSONRequest'
+    MultipartRequest = 'MultipartRequest'
+
     def __init__(self, schema):
         """Initialized generator.
 
@@ -172,11 +176,23 @@ class Swagger2Definition(object):
         """
         lines = []
 
+        consumes = schema['consumes'][0]
+        consumes_requests = {
+            'application/json': self.JSONRequest,
+            'multipart/form-data': self.MultipartRequest,
+        }
+        request_type = consumes_requests[consumes]
+
         # header
         method_name = self._camel_to_underscore(schema['operationId'])
         method_args = ['self']
         method_args.extend(self._get_method_args(schema['parameters']))
         method_args.extend(self._get_method_kwargs(schema['parameters']))
+        if request_type == self.MultipartRequest:
+            # The multipart payload is not defined as a parameter in the
+            # specification, just add it here.
+            method_args.append('payload=None')
+
         lines.append('def {method_name}({args_and_kwargs}):'.format(
             method_name=method_name, args_and_kwargs=', '.join(method_args)))
 
@@ -198,11 +214,16 @@ class Swagger2Definition(object):
             self._get_path_args(http_path, schema['parameters'])]
         method_args_and_kwargs.extend(self._get_method_kwargs(
             schema['parameters'], 'self'))
+
+        if request_type == self.MultipartRequest:
+            method_args_and_kwargs.append('payload=payload')
+
         body = (
-            "return self._{http_method}({method_kwargs})"
+            "return self._{http_method}({request_type}({method_kwargs}))"
         ).format(
             http_method=http_method, http_path=http_path,
-            method_kwargs=', '.join(method_args_and_kwargs)
+            method_kwargs=', '.join(method_args_and_kwargs),
+            request_type=request_type,
         )
         lines.append(self._add_line(body, 1))
         lines.append(self._add_line('', 1))
