@@ -29,7 +29,7 @@ class BaseTest(unittest.TestCase):
 
     def setUp(self):
         self.base = callfire_base.BaseAPI('username', 'password')
-        self.base.BASE_URL = 'base_url'
+        self.base.BASE_URL = 'http://base_url.com'
 
     def test_base_attrs(self):
         self.assertEqual(self.base.username, 'username')
@@ -55,8 +55,6 @@ class BaseTest(unittest.TestCase):
             self.assertDictEqual(response.json(), dict(success=True))
 
     def test_exception_wrapper_wraps_url_error(self):
-        path, query, body = '/path', dict(fields='id'), dict(data='data')
-
         fake_request = flexmock(
             prepare=flexmock(),
             path=flexmock(),
