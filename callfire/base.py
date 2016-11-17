@@ -100,19 +100,18 @@ class MultipartRequest(BaseRequest):
 
     @staticmethod
     def generate_multipart(file_stream):
-        parts = []
-        boundary = 'boundary'
-        part_boundary = '--' + boundary
+        boundary = b'boundary'
+        part_boundary = b'--' + boundary
 
         parts = [
             part_boundary,
-            'Content-Disposition: form-data; name="file"; filename="file"'
-            '\r\n',
+            b'Content-Disposition: form-data; name="file"; filename="file"'
+            b'\r\n',
             file_stream.read(),
-            '--{}--'.format(boundary),
-            '',
+            b'--' + boundary + b'--',
+            b'',
         ]
-        return '\r\n'.join(parts)
+        return b'\r\n'.join(parts)
 
     @property
     def prepared_body(self):
