@@ -3,8 +3,8 @@ python-callfire
 .. image:: https://travis-ci.org/iMedicare/python-callfire.svg?branch=master
     :target: https://travis-ci.org/iMedicare/python-callfire
 
-.. image:: https://img.shields.io/pypi/v/requests.svg
-    :target: https://pypi.python.org/pypi/requests
+.. image:: https://img.shields.io/pypi/v/python-callfire.svg
+    :target: https://pypi.python.org/pypi/python-callfire
 
 Thin wrapper in Python which implements CallFire v2 interface definitions based on Swagger specification.
 
