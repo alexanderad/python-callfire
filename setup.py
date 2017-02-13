@@ -10,7 +10,7 @@ setup(
     version='0.10.0',
     description='CallFire API thin wrapper.',
     long_description=readme,
-    url='https://github.com/iMedicare/python-callfire',
+    url='https://github.com/alexanderad/python-callfire',
     license='MIT',
     author='iMedicare Team',
     author_email='devops@imedicare.com',
