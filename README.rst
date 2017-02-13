@@ -1,6 +1,6 @@
 python-callfire
 ===============
-.. image:: https://travis-ci.org/iMedicare/python-callfire.svg?branch=master
+.. image:: https://travis-ci.org/alexanderad/python-callfire.svg?branch=master
     :target: https://travis-ci.org/alexanderad/python-callfire
 
 .. image:: https://img.shields.io/pypi/v/python-callfire.svg
